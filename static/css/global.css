@@ -1333,13 +1333,53 @@ body {
 }
 
 .pagination .page-link {
-    color: #333;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     margin: 0 3px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent-orange);
+    color: var(--text-primary);
+    transform: translateY(-1px);
 }
 
 .pagination .active .page-link {
-    background-color: #ffb6c1;
-    border-color: #ffb6c1;
+    background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+    border-color: var(--accent-orange);
     color: white;
+    box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.pagination-sm .page-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+}
+
+.sort-bar {
+    background: var(--bg-card);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+.results-count {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.top-pagination {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.sort-bar {
+    position: relative;
 }
