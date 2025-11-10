@@ -440,23 +440,25 @@ body {
 }
 
 .scrollable-badges::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: transparent;
     border-radius: 3px;
 }
 
 .scrollable-badges::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--text-secondary);
     border-radius: 3px;
+    opacity: 0.5;
 }
 
 .scrollable-badges::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--text-primary);
+    opacity: 0.7;
 }
 
 /* Firefox scrollbar */
 .scrollable-badges {
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    scrollbar-color: var(--text-secondary) transparent;
 }
 
 .filter-badge,

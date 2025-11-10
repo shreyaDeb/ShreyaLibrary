@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% block title %}My Cozy Collection{% endblock %}
-
 {% block content %}
 <!-- Statistics -->
 <div class="stats-container">
@@ -56,11 +54,11 @@
 <!-- Bookshelf -->
 {% if books %}
 <div class="bookshelf-container">
-    <!-- First Row -->
+    <!-- Dynamic bookshelf rows -->
+    {% for shelf in shelves %}
     <div class="bookshelf">
         <div class="books-row">
-            {% for book in books %}
-            {% if forloop.counter0 < 18 %}
+            {% for book in shelf %}
             <div class="book-spine" data-book-id="{{ book.pk }}">
                 <a href="{% url 'book_detail' book.pk %}" class="book-link">
                     <div class="spine-content spine-{{ forloop.counter|divisibleby:5|yesno:'orange,red,brown,yellow,green' }}">
@@ -70,44 +68,12 @@
                     </div>
                 </a>
             </div>
-            {% endif %}
             {% endfor %}
         </div>
         <div class="shelf-board"></div>
     </div>
-
-    <!-- Second Row (if more than 18 books) -->
-    {% if books|length > 18 %}
-    <div class="bookshelf">
-        <div class="books-row">
-            {% for book in books %}
-            {% if forloop.counter0 >= 18 and forloop.counter0 < 36 %}
-            <div class="book-spine" data-book-id="{{ book.pk }}">
-                <a href="{% url 'book_detail' book.pk %}" class="book-link">
-                    <div class="spine-content spine-{{ forloop.counter|divisibleby:5|yesno:'orange,red,brown,yellow,green' }}">
-                        <div class="book-title-spine">{{ book.title|truncatewords:3 }}</div>
-                        <div class="book-author-spine">{{ book.authors|truncatewords:2 }}</div>
-                        <div class="status-indicator status-{{ book.reading_status }}"></div>
-                    </div>
-                </a>
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        <div class="shelf-board"></div>
-    </div>
-    {% endif %}
-
+    {% endfor %}
 </div>
-
-<!-- Dynamic rows for any number of books (JavaScript approach) -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // If you want to handle more books dynamically, you can use JavaScript
-        // to create additional rows as needed
-        console.log('Total books: {{ books|length }}');
-    });
-</script>
 
 {% else %}
 <div class="empty-library">

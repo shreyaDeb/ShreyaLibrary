@@ -5,41 +5,22 @@ from .models import Book
 from .forms import BookForm
 import random
 
-def book_list(request):  
-    """Display all books"""
-    books = Book.objects.all().order_by('-id')  # Order by latest first
+def book_list(request):
+    books = Book.objects.all()
+    # Add your existing filtering logic here
     
-    # Search functionality
-    query = request.GET.get('q')
-    if query:
-        books = books.filter(
-            Q(title__icontains=query) |
-            Q(authors__icontains=query) |
-            Q(tags__icontains=query) |
-            Q(publisher__icontains=query)
-        )
+    # Determine books per shelf based on screen size (this will be refined with JavaScript)
+    # For initial server-side rendering, we'll use a default value
+    books_per_shelf = 18  # Default for larger screens
     
-    # Filter by status
-    status = request.GET.get('status')
-    if status:
-        books = books.filter(reading_status=status)
-    
-    # Filter by tag
-    tag = request.GET.get('tag')
-    if tag:
-        books = books.filter(tags__icontains=tag)
-    
-    # Limit to latest 36 books only if not searching or filtering
-    if not query and not status and not tag:
-        books = books[:36]
-    
-    # Split books into rows of 12 books each for the bookshelf display
-    books_per_row = 12
-    books_rows = [books[i:i + books_per_row] for i in range(0, len(books), books_per_row)]
+    # Create shelves by splitting books into chunks
+    shelves = []
+    for i in range(0, len(books), books_per_shelf):
+        shelves.append(books[i:i + books_per_shelf])
     
     context = {
         'books': books,
-        'books_rows': books_rows,  # Add this for the template
+        'shelves': shelves,  # Add this for the template
         'total_books': Book.objects.count(),
         'reading': Book.objects.filter(reading_status='reading').count(),
         'completed': Book.objects.filter(reading_status='completed').count(),
