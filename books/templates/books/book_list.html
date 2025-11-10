@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}My Cozy Collection{% endblock %}
+
+{% block content %}
+<!-- Statistics -->
+<div class="stats-container">
+    <div class="stat-card total">
+        <div class="stat-icon">📚</div>
+        <div class="stat-number">{{ total_books }}</div>
+        <div class="stat-label">Total Books</div>
+    </div>
+    <div class="stat-card reading">
+        <div class="stat-icon">☕</div>
+        <div class="stat-number">{{ reading }}</div>
+        <div class="stat-label">Reading Now</div>
+    </div>
+    <div class="stat-card completed">
+        <div class="stat-icon">🎃</div>
+        <div class="stat-number">{{ completed }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card wishlist">
+        <div class="stat-icon">🌙</div>
+        <div class="stat-number">{{ wishlist }}</div>
+        <div class="stat-label">Wishlist</div>
+    </div>
+</div>
+
+<!-- Decorative divider -->
+<div class="acorn-divider">🍁 🌰 🍁</div>
+
+<!-- Search and Filter -->
+<div class="search-filter-section">
+    <form method="get" class="row g-3">
+        <div class="col-md-8">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" class="form-control" placeholder="Search your cozy collection..."
+                    value="{{ request.GET.q }}">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select name="status" class="form-select" onchange="this.form.submit()">
+                <option value="">📖 All Books</option>
+                <option value="unread" {% if request.GET.status == 'unread' %}selected{% endif %}>🆕 Unread</option>
+                <option value="reading" {% if request.GET.status == 'reading' %}selected{% endif %}>☕ Reading</option>
+                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>✅ Completed
+                </option>
+                <option value="wishlist" {% if request.GET.status == 'wishlist' %}selected{% endif %}>⭐ Wishlist</option>
+            </select>
+        </div>
+    </form>
+</div>
+
+<!-- Bookshelf -->
+{% if books %}
+<div class="bookshelf-container">
+    <!-- First Row -->
+    <div class="bookshelf">
+        <div class="books-row">
+            {% for book in books %}
+            {% if forloop.counter0 < 18 %}
+            <div class="book-spine" data-book-id="{{ book.pk }}">
+                <a href="{% url 'book_detail' book.pk %}" class="book-link">
+                    <div class="spine-content spine-{{ forloop.counter|divisibleby:5|yesno:'orange,red,brown,yellow,green' }}">
+                        <div class="book-title-spine">{{ book.title|truncatewords:3 }}</div>
+                        <div class="book-author-spine">{{ book.authors|truncatewords:2 }}</div>
+                        <div class="status-indicator status-{{ book.reading_status }}"></div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="shelf-board"></div>
+    </div>
+
+    <!-- Second Row (if more than 18 books) -->
+    {% if books|length > 18 %}
+    <div class="bookshelf">
+        <div class="books-row">
+            {% for book in books %}
+            {% if forloop.counter0 >= 18 and forloop.counter0 < 36 %}
+            <div class="book-spine" data-book-id="{{ book.pk }}">
+                <a href="{% url 'book_detail' book.pk %}" class="book-link">
+                    <div class="spine-content spine-{{ forloop.counter|divisibleby:5|yesno:'orange,red,brown,yellow,green' }}">
+                        <div class="book-title-spine">{{ book.title|truncatewords:3 }}</div>
+                        <div class="book-author-spine">{{ book.authors|truncatewords:2 }}</div>
+                        <div class="status-indicator status-{{ book.reading_status }}"></div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="shelf-board"></div>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Dynamic rows for any number of books (JavaScript approach) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // If you want to handle more books dynamically, you can use JavaScript
+        // to create additional rows as needed
+        console.log('Total books: {{ books|length }}');
+    });
+</script>
+
+{% else %}
+<div class="empty-library">
+    <div class="empty-icon">📖</div>
+    <h2>Your Library is Empty</h2>
+    <p>Time to cozy up with some new books!</p>
+    <a href="{% url 'book_create' %}" class="btn btn-add-book">
+        <i class="fas fa-plus me-2"></i>Add Your First Book
+    </a>
+</div>
+{% endif %}
+{% endblock %}

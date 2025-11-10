@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Random Book Suggestion{% endblock %}
+
+{% block content %}
+<div class="modal fade show" id="randomBookModal" tabindex="-1" aria-hidden="true" style="display:block; background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📚 Your Random Book</h5>
+                <a href="{% url 'book_list' %}" class="btn-close"></a>
+            </div>
+            <div class="modal-body d-flex gap-3">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="width:150px; height:auto; object-fit:cover; border-radius:8px;">
+                {% else %}
+                <div style="width:150px; height:220px; background:#ccc; display:flex; align-items:center; justify-content:center; border-radius:8px;">
+                    📖
+                </div>
+                {% endif %}
+
+                <div>
+                    <h3>{{ book.title }}</h3>
+                    <p><strong>Authors:</strong> {{ book.authors }}</p>
+                    {% if book.get_tags_list %}
+                    <p><strong>Tags:</strong> 
+                        {% for tag in book.get_tags_list %}
+                            <span class="badge bg-secondary">{{ tag }}</span>
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+                    {% if book.description %}
+                    <p><strong>Summary:</strong> {{ book.description|truncatewords:40 }}</p>
+                    {% endif %}
+                    <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary mt-2">View Details</a>
+                    <a href="{% url 'random_book' %}" class="btn btn-outline-success mt-2">Pick Another</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-focus modal -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var modalEl = document.getElementById('randomBookModal');
+        var modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    });
+</script>
+
+{% endblock %}

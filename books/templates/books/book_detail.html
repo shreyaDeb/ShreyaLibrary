@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ book.title }} - Cozy Library{% endblock %}
+
+{% block content %}
+<div class="book-detail-container">
+    <!-- Breadcrumb with autumn theme -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb-autumn">
+            <li><a href="{% url 'book_list' %}"><i class="fas fa-home"></i> Library</a></li>
+            <li>🍂</li>
+            <li class="active">{{ book.title|truncatewords:5 }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Book Cover and Actions -->
+        <div class="col-lg-4">
+            <div class="cover-container-autumn">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-cover-large-autumn">
+                {% else %}
+                <div class="no-cover-autumn">
+                    <div class="book-icon-large">📖</div>
+                    <p>No Cover Image</p>
+                </div>
+                {% endif %}
+
+                <div class="status-badge-autumn status-{{ book.reading_status }}">
+                    {% if book.reading_status == 'unread' %}🆕
+                    {% elif book.reading_status == 'reading' %}☕
+                    {% elif book.reading_status == 'completed' %}✅
+                    {% else %}⭐
+                    {% endif %}
+                    {{ book.get_reading_status_display }}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons-autumn mt-4">
+                <a href="{% url 'book_update' book.pk %}" class="btn-autumn btn-edit-autumn">
+                    <i class="fas fa-edit me-2"></i>Edit Book
+                </a>
+                <button type="button" class="btn-autumn btn-delete-autumn" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal">
+                    <i class="fas fa-trash me-2"></i>Delete Book
+                </button>
+            </div>
+        </div>
+
+        <!-- Book Information -->
+        <div class="col-lg-8">
+            <div class="book-header-autumn">
+                <h1 class="book-title-autumn">{{ book.title }}</h1>
+                <p class="book-authors-autumn">
+                    <span class="icon-autumn">✍️</span>
+                    {% for author in book.get_authors_list %}
+                    <span class="author-tag-autumn">{{ author }}</span>
+                    {% endfor %}
+                </p>
+
+                {% if book.rating %}
+                <div class="rating-display-autumn">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= book.rating %} <span class="star-filled">⭐</span>
+                        {% else %}
+                        <span class="star-empty">☆</span>
+                        {% endif %}
+                        {% endfor %}
+                        <span class="rating-text-autumn">({{ book.rating }}/5 acorns)</span>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Description -->
+            {% if book.description %}
+            <div class="info-section-autumn">
+                <h3 class="section-title-autumn"><span class="icon-autumn">📜</span>Description</h3>
+                <p class="book-description-autumn">{{ book.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Book Details Grid -->
+            <div class="info-section-autumn">
+                <h3 class="section-title-autumn"><span class="icon-autumn">🔖</span>Book Details</h3>
+                <div class="details-grid-autumn">
+                    {% if book.publisher %}
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">🏢 Publisher</div>
+                        <div class="detail-value-autumn">{{ book.publisher }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if book.publish_date %}
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">📅 Published</div>
+                        <div class="detail-value-autumn">{{ book.publish_date|date:"F d, Y" }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if book.pages %}
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">📄 Pages</div>
+                        <div class="detail-value-autumn">{{ book.pages }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if book.price %}
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">💰 Price</div>
+                        <div class="detail-value-autumn">${{ book.price }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if book.isbn13 %}
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">📊 ISBN-13</div>
+                        <div class="detail-value-autumn">{{ book.isbn13 }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if book.isbn10 %}
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">📊 ISBN-10</div>
+                        <div class="detail-value-autumn">{{ book.isbn10 }}</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">➕ Added</div>
+                        <div class="detail-value-autumn">{{ book.date_added|date:"M d, Y" }}</div>
+                    </div>
+
+                    <div class="detail-item-autumn">
+                        <div class="detail-label-autumn">🔄 Updated</div>
+                        <div class="detail-value-autumn">{{ book.last_modified|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            {% if book.get_tags_list %}
+            <div class="info-section-autumn">
+                <h3 class="section-title-autumn"><span class="icon-autumn">🏷️</span>Tags</h3>
+                <div class="tags-container-autumn">
+                    {% for tag in book.get_tags_list %}
+                    <a href="/?tag={{ tag }}" class="tag-badge-autumn">🍁 {{ tag }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Personal Notes -->
+            {% if book.notes %}
+            <div class="info-section-autumn">
+                <h3 class="section-title-autumn"><span class="icon-autumn">📝</span>Personal Notes</h3>
+                <div class="notes-container-autumn">
+                    {{ book.notes|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-autumn">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">🍂 Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <strong>{{ book.title }}</strong> from your cozy collection?</p>
+                <p class="text-muted mb-0">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'book_delete' book.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-autumn btn-delete-autumn">Delete Book</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

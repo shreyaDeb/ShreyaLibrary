@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Book - Personal Library{% endblock %}
+
+{% block content %}
+<div class="form-container">
+
+    <form method="post" enctype="multipart/form-data" class="book-form">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-book me-2"></i>Basic Information
+                    </h3>
+
+                    <div class="mb-4">
+                        <label for="id_title" class="form-label required">Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_authors" class="form-label required">Authors</label>
+                        {{ form.authors }}
+                        <small class="form-text">Separate multiple authors with commas</small>
+                        {% if form.authors.errors %}
+                        <div class="invalid-feedback d-block">{{ form.authors.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_description" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Publishing Information -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-building me-2"></i>Publishing Information
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_publisher" class="form-label">Publisher</label>
+                            {{ form.publisher }}
+                            {% if form.publisher.errors %}
+                            <div class="invalid-feedback d-block">{{ form.publisher.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_publish_date" class="form-label">Publish Date</label>
+                            {{ form.publish_date }}
+                            {% if form.publish_date.errors %}
+                            <div class="invalid-feedback d-block">{{ form.publish_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_isbn13" class="form-label">ISBN-13</label>
+                            {{ form.isbn13 }}
+                            <small class="form-text">13-digit ISBN</small>
+                            {% if form.isbn13.errors %}
+                            <div class="invalid-feedback d-block">{{ form.isbn13.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_isbn10" class="form-label">ISBN-10</label>
+                            {{ form.isbn10 }}
+                            <small class="form-text">10-digit ISBN</small>
+                            {% if form.isbn10.errors %}
+                            <div class="invalid-feedback d-block">{{ form.isbn10.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book Details -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-info-circle me-2"></i>Book Details
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_pages" class="form-label">Pages</label>
+                            {{ form.pages }}
+                            {% if form.pages.errors %}
+                            <div class="invalid-feedback d-block">{{ form.pages.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_price" class="form-label">Price ($)</label>
+                            {{ form.price }}
+                            {% if form.price.errors %}
+                            <div class="invalid-feedback d-block">{{ form.price.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_tags" class="form-label">Tags</label>
+                        {{ form.tags }}
+                        <small class="form-text">E.g., fiction, classic, adventure (separate with commas)</small>
+                        {% if form.tags.errors %}
+                        <div class="invalid-feedback d-block">{{ form.tags.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-user me-2"></i>Personal Information
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_reading_status" class="form-label">Reading Status</label>
+                            {{ form.reading_status }}
+                            {% if form.reading_status.errors %}
+                            <div class="invalid-feedback d-block">{{ form.reading_status.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_rating" class="form-label">Rating (1-5 stars)</label>
+                            {{ form.rating }}
+                            {% if form.rating.errors %}
+                            <div class="invalid-feedback d-block">{{ form.rating.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_notes" class="form-label">Personal Notes</label>
+                        {{ form.notes }}
+                        <small class="form-text">Your thoughts, quotes, or anything memorable</small>
+                        {% if form.notes.errors %}
+                        <div class="invalid-feedback d-block">{{ form.notes.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Cover Image -->
+            <div class="col-lg-4">
+                <div class="form-section sticky-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-image me-2"></i>Cover Image
+                    </h3>
+
+                    <div class="cover-upload-container">
+                        {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="Current cover" class="current-cover"
+                            id="coverPreview">
+                        {% else %}
+                        <div class="cover-placeholder" id="coverPreview">
+                            <i class="fas fa-book"></i>
+                            <p>No cover image</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="id_cover_image" class="form-label">Upload Cover</label>
+                        {{ form.cover_image }}
+                        <small class="form-text d-block mt-2">Recommended: 300x450px or similar ratio</small>
+                        {% if form.cover_image.errors %}
+                        <div class="invalid-feedback d-block">{{ form.cover_image.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="help-text mt-4">
+                        <h5><i class="fas fa-lightbulb me-2"></i>Tips</h5>
+                        <ul>
+                            <li>Use high-quality cover images</li>
+                            <li>Keep file sizes under 5MB</li>
+                            <li>Supported formats: JPG, PNG</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save me-2"></i>Save Book
+            </button>
+            <a href="{% if book %}{% url 'book_detail' book.pk %}{% else %}{% url 'book_list' %}{% endif %}"
+                class="btn btn-cancel">
+                <i class="fas fa-times me-2"></i>Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Image preview functionality
+    document.getElementById('id_cover_image').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.getElementById('coverPreview');
+                preview.innerHTML = `<img src="${e.target.result}" alt="Cover preview" class="current-cover">`;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+<style>
+    .form-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    .form-header {
+        background: var(--bg-card);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        margin-bottom: 2rem;
+        text-align: center;
+        border: 2px solid var(--border-color);
+    }
+
+    .form-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .form-header .text-muted {
+        color: var(--text-secondary) !important;
+    }
+
+    .form-section {
+        background: var(--bg-card);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        margin-bottom: 2rem;
+        border: 2px solid var(--border-color);
+    }
+
+    .sticky-section {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .form-section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-label.required::after {
+        content: " *";
+        color: var(--accent-red);
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Lora', serif;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--accent-orange);
+        box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
+        outline: none;
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        color: var(--text-secondary) !important;
+    }
+
+    .cover-upload-container {
+        width: 100%;
+        aspect-ratio: 2/3;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        background: var(--bg-primary);
+    }
+
+    .current-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cover-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .cover-placeholder i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .help-text {
+        background: var(--bg-primary);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border-left: 4px solid var(--accent-orange);
+    }
+
+    .help-text h5 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--accent-orange);
+    }
+
+    .help-text ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .help-text li {
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .form-actions .btn {
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        font-family: 'Crimson Text', serif;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px var(--card-shadow);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--card-shadow);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+    .btn-cancel:hover {
+        background: var(--bg-primary);
+        border-color: var(--text-secondary);
+        color: var(--text-primary);
+    }
+
+    /* Style form inputs to match theme */
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+    }
+
+    .invalid-feedback {
+        color: var(--accent-red);
+    }
+
+    @media (max-width: 991px) {
+        .sticky-section {
+            position: static;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+        }
+        
+        .form-container {
+            padding: 0.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}

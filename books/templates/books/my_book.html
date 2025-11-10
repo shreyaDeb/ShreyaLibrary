@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Books{% endblock %}
+
+{% block content %}
+<div class="my-books-container d-flex gap-4">
+
+    <!-- Sidebar Filters -->
+    <div class="filters-sidebar">
+        <h5>Filter By</h5>
+
+        <!-- Clear Filters Button -->
+        <div class="mb-3">
+            <a href="{% url 'my_books' %}" class="btn btn-sm btn-outline-secondary w-100">Clear Filters</a>
+        </div>
+
+        <!-- Author Filter -->
+        <div class="filter-section">
+            <p>Author</p>
+            <div class="filter-badges-container scrollable-badges">
+                {% for author in authors %}
+                <a href="?author={{ author }}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}"
+                    class="badge filter-badge {% if selected_author == author %}active{% endif %}">{{ author }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tags Filter -->
+        <div class="filter-section">
+            <p>Tags</p>
+            <div class="filter-badges-container scrollable-badges">
+                {% for tag in tags %}
+                <a href="?tag={{ tag }}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}"
+                    class="badge filter-badge {% if selected_tag == tag %}active{% endif %}">{{ tag }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="filter-section">
+            <p>Status</p>
+            <div class="filter-badges-container scrollable-badges">
+                {% for status in statuses %}
+                <a href="?status={{ status }}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}"
+                    class="badge filter-badge {% if selected_status == status %}active{% endif %}">{{ status }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ratings Filter -->
+        <div class="filter-section">
+            <p>Ratings</p>
+            <div class="filter-badges-container scrollable-badges">
+                {% for i in ratings %}
+                <a href="?rating={{ i }}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}"
+                    class="badge rating-badge {% if selected_rating|default:'' == i|stringformat:"s" %}active{% endif %}">{{ i }}★</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="books-main flex-grow-1">
+        <div class="sort-bar d-flex justify-content-end mb-3">
+            <div class="dropdown">
+                <i class="fas fa-sort-amount-down-alt sort-icon" data-bs-toggle="dropdown"></i>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item"
+                           href="?sort=title{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}">Title</a></li>
+                    <li><a class="dropdown-item"
+                           href="?sort=author{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}">Author</a></li>
+                    <li><a class="dropdown-item"
+                           href="?sort=rating{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}">Rating</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="books-grid">
+            {% for book in books %}
+            <div class="book-card">
+                <a href="{% url 'book_detail' book.pk %}">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="placeholder-book">📖</div>
+                    {% endif %}
+                    <p class="book-title">{{ book.title }}</p>
+                </a>
+            </div>
+            {% empty %}
+            <p>No books found with selected filters.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Reorganize badges to show active ones first
+        function organizeBadges() {
+            document.querySelectorAll('.filter-badges-container').forEach(container => {
+                const badges = Array.from(container.querySelectorAll('.filter-badge, .rating-badge'));
+                
+                // Sort badges: active ones first
+                badges.sort((a, b) => {
+                    const aIsActive = a.classList.contains('active');
+                    const bIsActive = b.classList.contains('active');
+                    
+                    if (aIsActive && !bIsActive) return -1;
+                    if (!aIsActive && bIsActive) return 1;
+                    return 0;
+                });
+                
+                // Reappend badges in new order
+                badges.forEach(badge => container.appendChild(badge));
+            });
+        }
+        
+        organizeBadges();
+    });
+</script>
+{% endblock %}
