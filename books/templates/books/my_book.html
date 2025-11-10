@@ -174,29 +174,65 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+    
+        // Make clicking the same filter again unselect it
+        document.querySelectorAll('.filter-badge, .rating-badge').forEach(badge => {
+            badge.addEventListener('click', function (e) {
+                e.preventDefault(); // stop default link click
+                const url = new URL(window.location.href);
+                const clickedHref = new URL(this.href, window.location.origin);
+    
+                // Get the query params from the clicked badge
+                const clickedParams = clickedHref.searchParams;
+    
+                // Figure out what filter type this is (tag, author, status, rating)
+                const keys = ['tag', 'author', 'status', 'rating'];
+                let key = null;
+                for (const k of keys) {
+                    if (clickedParams.has(k)) {
+                        key = k;
+                        break;
+                    }
+                }
+    
+                if (!key) return;
+    
+                const selectedValue = clickedParams.get(key);
+                const currentValue = url.searchParams.get(key);
+    
+                if (selectedValue === currentValue) {
+                    // User clicked the same active filter → remove it
+                    url.searchParams.delete(key);
+                } else {
+                    // User clicked a new filter → set it
+                    url.searchParams.set(key, selectedValue);
+                }
+    
+                // Always reset to page 1 when changing filters
+                url.searchParams.delete('page');
+    
+                // Redirect with updated params
+                window.location.href = url.toString();
+            });
+        });
+    
         // Reorganize badges to show active ones first
         function organizeBadges() {
             document.querySelectorAll('.filter-badges-container').forEach(container => {
                 const badges = Array.from(container.querySelectorAll('.filter-badge, .rating-badge'));
-                
-                // Sort badges: active ones first
                 badges.sort((a, b) => {
                     const aIsActive = a.classList.contains('active');
                     const bIsActive = b.classList.contains('active');
-                    
-                    if (aIsActive && !bIsActive) return -1;
-                    if (!aIsActive && bIsActive) return 1;
-                    return 0;
+                    return aIsActive === bIsActive ? 0 : aIsActive ? -1 : 1;
                 });
-                
-                // Reappend badges in new order
                 badges.forEach(badge => container.appendChild(badge));
             });
         }
-        
+    
         organizeBadges();
     });
-</script>
+    </script>
+    
 
 <style>
     /* Pagination styles using your existing CSS variables */
