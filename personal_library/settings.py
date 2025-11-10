@@ -31,8 +31,8 @@ INSTALLED_APPS = [
     'books',
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/static/images/'
+MEDIA_ROOT = BASE_DIR / "static/images"
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
