@@ -1331,3 +1331,15 @@ body {
 .spine-green {
     background: linear-gradient(to right, #059669, #047857);
 }
+
+.pagination .page-link {
+    color: #333;
+    border-radius: 8px;
+    margin: 0 3px;
+}
+
+.pagination .active .page-link {
+    background-color: #ffb6c1;
+    border-color: #ffb6c1;
+    color: white;
+}

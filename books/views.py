@@ -4,6 +4,7 @@ from django.db.models import Q
 from .models import Book
 from .forms import BookForm
 import random
+from django.core.paginator import Paginator
 
 def book_list(request):
     books = Book.objects.all()
@@ -84,6 +85,7 @@ def random_book(request):
     book = random.choice(books)
     return redirect('book_detail', pk=book.pk)
 
+
 def my_books(request):
     books = Book.objects.all()
 
@@ -96,9 +98,10 @@ def my_books(request):
         tags.update(book.get_tags_list())
     tags = sorted(tags)
 
-    statuses = ['Unread','Reading', 'Completed', 'Wishlist']
+    statuses = ['Unread', 'Reading', 'Completed', 'Wishlist']
     ratings = [1, 2, 3, 4, 5]
 
+    # Filters
     selected_author = request.GET.get('author')
     selected_tag = request.GET.get('tag')
     selected_status = request.GET.get('status')
@@ -114,6 +117,7 @@ def my_books(request):
     if selected_rating:
         books = books.filter(rating__gte=int(selected_rating))
 
+    # Sorting
     if sort_by == 'title':
         books = books.order_by('title')
     elif sort_by == 'author':
@@ -121,8 +125,14 @@ def my_books(request):
     elif sort_by == 'rating':
         books = books.order_by('-rating')
 
+    # ✅ Pagination (20 per page)
+    paginator = Paginator(books, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'books': books,
+        'books': page_obj,  # paginated books
+        'page_obj': page_obj,  # for pagination controls
         'authors': authors,
         'tags': tags,
         'statuses': statuses,
