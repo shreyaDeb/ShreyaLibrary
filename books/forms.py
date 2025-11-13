@@ -14,7 +14,11 @@ class BookForm(forms.ModelForm):
             'authors': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Author 1, Author 2'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Book description...'}),
             'publisher': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Publisher name'}),
-            'publish_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'publish_date': forms.DateInput(attrs={
+                'class': 'form-control datepicker',
+                'placeholder': 'Select date',
+                'type': 'text',
+            }),
             'isbn13': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '13-digit ISBN'}),
             'isbn10': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '10-digit ISBN'}),
             'pages': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Number of pages'}),

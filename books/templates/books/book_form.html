@@ -1,6 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Flatpickr CSS & JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const datepicker = flatpickr(".datepicker", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            allowInput: true,
+            defaultDate: "{{ form.publish_date.value|default:'' }}",
+            onReady: function (selectedDates, dateStr, instance) {
+                const cal = instance.calendarContainer;
+                cal.classList.add('shadow-lg', 'rounded');
+                applyTheme(cal);
+            },
+            onOpen: function (selectedDates, dateStr, instance) {
+                const cal = instance.calendarContainer;
+                applyTheme(cal);
+            }
+        });
+
+        // Detect theme changes dynamically
+        const observer = new MutationObserver(() => {
+            const cal = document.querySelector(".flatpickr-calendar");
+            if (cal) applyTheme(cal);
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+
+        // Helper: Apply the current theme colors
+        function applyTheme(cal) {
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            if (isDark) {
+                cal.classList.add("flatpickr-dark");
+            } else {
+                cal.classList.remove("flatpickr-dark");
+            }
+        }
+    });
+</script>
+
+
+
 <div class="form-container">
 
     <form method="post" enctype="multipart/form-data" class="book-form">
@@ -58,11 +105,17 @@
 
                         <div class="col-md-6 mb-4">
                             <label for="id_publish_date" class="form-label">Publish Date</label>
-                            {{ form.publish_date }}
+                            <div class="input-group">
+                                {{ form.publish_date }}
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                            </div>
                             {% if form.publish_date.errors %}
                             <div class="invalid-feedback d-block">{{ form.publish_date.errors }}</div>
                             {% endif %}
                         </div>
+
                     </div>
 
                     <div class="row">
@@ -423,7 +476,7 @@
         .form-header h1 {
             font-size: 2rem;
         }
-        
+
         .form-container {
             padding: 0.5rem;
         }
@@ -434,11 +487,40 @@
             flex-direction: column;
             align-items: center;
         }
-        
+
         .form-actions .btn {
             width: 100%;
             max-width: 300px;
         }
+    }
+
+    /* 🌞 Light mode (default) */
+    .flatpickr-calendar {
+        background: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .flatpickr-day:hover {
+        background: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* 🌙 Dark mode calendar */
+    .flatpickr-calendar.flatpickr-dark {
+        background: var(--bg-secondary) !important;
+        color: var(--text-card) !important;
+        border: 2px solid var(--border-color) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .flatpickr-calendar.flatpickr-dark .flatpickr-day:hover {
+        background: var(--shelf-wood) !important;
+        color: var(--accent-yellow) !important;
+    }
+
+    .flatpickr-calendar.flatpickr-dark .flatpickr-day.selected {
+        background: linear-gradient(135deg, var(--accent-orange), var(--accent-red)) !important;
+        color: #fff !important;
     }
 </style>
 {% endblock %}

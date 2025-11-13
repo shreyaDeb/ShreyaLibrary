@@ -1,13 +1,16 @@
 from django.contrib import admin
 from .models import Book
+from .forms import BookForm  # 👈 import your custom form
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
+    form = BookForm  # 👈 tell admin to use your form
+
     list_display = ['title', 'authors', 'publisher', 'publish_date', 'reading_status', 'rating', 'date_added']
     list_filter = ['reading_status', 'rating', 'publisher', 'publish_date']
     search_fields = ['title', 'authors', 'isbn13', 'isbn10', 'tags']
     readonly_fields = ['date_added', 'last_modified']
-    
+
     fieldsets = (
         ('Basic Information', {
             'fields': ('title', 'authors', 'description')
